@@ -13,7 +13,14 @@ find_package(Qt5 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(MDP_GUI main.cpp)
+add_executable(MDP_GUI main.cpp
+        Widget.cpp
+        Widget.h
+        Agent.cpp
+        Agent.h
+        Environment.cpp
+        Environment.h
+)
 target_link_libraries(MDP_GUI
         Qt5::Core
         Qt5::Gui
