@@ -3,7 +3,7 @@
 #include <random>
 #include <iostream>
 const int MAX_STEPS_PER_EPISODE = 1000;
-
+using namespace std;
 typedef int Reward;
 enum Action { MoveUp = 0, MoveDown, MoveLeft, MoveRight };
 std::ostream& operator<<(std::ostream& os, const Action action) {
@@ -107,7 +107,11 @@ bool Environment::isTerminal() const {
     return current_state == NumStates - 1;
 }
 
+
 Reward Environment::takeAction(Action action) {
+    const int goal_state = NumStates - 1;
+    int old_dist = std::abs(current_state/4 - goal_state/4) + std::abs(current_state%4 - goal_state%4);
+
     switch (action) {
         case MoveUp:     if (current_state >= 4) current_state -= 4; break;
         case MoveDown:   if (current_state < 12) current_state += 4; break;
@@ -115,8 +119,22 @@ Reward Environment::takeAction(Action action) {
         case MoveRight:  if (current_state % 4 != 3) current_state += 1; break;
         default:         std::cerr << "Invalid action!" << std::endl;
     }
-    return reward_table[current_state];
+
+    int new_dist = std::abs(current_state/4 - goal_state/4) + std::abs(current_state%4 - goal_state%4);
+    double reward = 0;
+
+    if (new_dist < old_dist) {  // This means action was good
+        reward = 100 * (1 - (double)new_dist / (double)old_dist);
+    } else if (new_dist > old_dist) {   // This means action was not optimal
+        reward = 0;
+    } else {  // This means the action made no progress (either good or bad)
+        reward = 50;
+    }
+
+
+    return reward;
 }
+
 
 void runEpisode(Environment& env, Agent& agent) {
     int state = env.getCurrentState();
