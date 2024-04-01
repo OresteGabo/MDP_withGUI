@@ -2,19 +2,32 @@
 #include <QPushButton>
 #include <random>
 #include <iostream>
+const int MAX_STEPS_PER_EPISODE = 1000;
 
 typedef int Reward;
 enum Action { MoveUp = 0, MoveDown, MoveLeft, MoveRight };
+std::ostream& operator<<(std::ostream& os, const Action action) {
+    switch (action) {
+        case MoveUp:     os << "MoveUp"; break;
+        case MoveDown:   os << "MoveDown"; break;
+        case MoveLeft:   os << "MoveLeft"; break;
+        case MoveRight:  os << "MoveRight"; break;
+    }
+    return os;
+}
 class Environment {
 private:
-    static const int NumStates = 16;
+
     int current_state;
-    Reward reward_table[NumStates]; // Rewards for being in each state.
+
 public:
     Environment();
     [[nodiscard]] int getCurrentState() const;
     bool isTerminal() const;
-    Reward takeAction(Action action); // Modify to return reward
+    Reward takeAction(Action action);
+    static constexpr int NumStates = 16;
+private :
+    Reward reward_table[NumStates]; // Rewards for being in each state.
 };
 
 
@@ -22,18 +35,25 @@ public:
 
 class Agent {
 private:
-    static std::mt19937 gen;
-    std::array<std::array<double, 4>, 16> QTable{};  // Initialize Q-Table with zeros
+    std::mt19937 gen;//{std::random_device{}()};
     double learning_rate = 0.1;
     double discount_factor = 0.95;
+    static const int NumOfActions = 4;
+    double getMaxQValue(int state);
+
+    std::array<std::array<double, Agent::NumOfActions>, Environment::NumStates> Q_table{};
+    //std::array<std::array<double, NumOfActions>, Environment::NumStates> Q_table{};
 public:
     Agent();
     Action choose_action(int state);
     void learn(Reward reward, int old_state, Action action, int new_state);
+    Action getMaxQAction(int state);
+
 };
 
 Agent::Agent() {
-    for (auto &row : QTable)
+    gen = std::mt19937(std::random_device{}());
+    for (auto &row : Q_table)
         row.fill(0.0);
 }
 
@@ -45,34 +65,38 @@ Action toAction(int action) {
     return static_cast<Action>(action);
 }
 
-std::mt19937 Agent::gen(std::random_device{}());
 
 Action Agent::choose_action(int state) {
     std::uniform_real_distribution<> dis(0, 1);
     if (dis(gen) < 0.1) {
         // Random choice
-        return toAction(std::uniform_int_distribution<>(0, 3)(gen));
+        return static_cast<Action>(std::uniform_int_distribution<>(0, NumOfActions - 1)(gen));
     } else {
         // Greedy choice
-        return toAction(std::max_element(QTable[state].begin(), QTable[state].end()) - QTable[state].begin());
+        return getMaxQAction(state);
     }
 }
 
 void Agent::learn(Reward reward, int old_state, Action action, int new_state) {
-    auto old_value = QTable[old_state][toInt(action)];
-    auto max_future_value = *std::max_element(QTable[new_state].begin(), QTable[new_state].end());
-    // Apply the Q-learning formula
-    double new_value = old_value + learning_rate * (reward + discount_factor * max_future_value - old_value);
-    QTable[old_state][toInt(action)] = new_value;
+    auto old_value = Q_table[old_state][static_cast<int>(action)];
+    auto max_future_value = getMaxQValue(new_state);
+    double new_value = (1 - learning_rate) * old_value + learning_rate * (reward + discount_factor * max_future_value);
+    Q_table[old_state][static_cast<int>(action)] = new_value;
+}
+Environment::Environment() : current_state(0) {
+    for(int i=0; i < NumStates - 1; i++)
+        reward_table[i] = -1;
+    reward_table[NumStates - 1] = 100; // Give a positive reward for reaching terminal state
 }
 
+// Returns the action associated with the maximum Q value for a given state.
+Action Agent::getMaxQAction(int state) {
+    return static_cast<Action>(std::max_element(Q_table[state].begin(), Q_table[state].begin() + NumOfActions) - Q_table[state].begin());
+}
 
-Environment::Environment() : current_state(0) {
-    // Fill reward_table with some reward values, for example:
-    for(int i=0; i < NumStates -1; i++) {
-        reward_table[i] = -1;
-    }
-    reward_table[NumStates - 1] = 100; // give a positive reward for reaching terminal state
+// Returns the maximum Q value for a given state.
+double Agent::getMaxQValue(int state) {
+    return *std::max_element(Q_table[state].begin(), Q_table[state].begin() + NumOfActions);
 }
 
 int Environment::getCurrentState() const {
@@ -96,15 +120,28 @@ Reward Environment::takeAction(Action action) {
 
 void runEpisode(Environment& env, Agent& agent) {
     int state = env.getCurrentState();
-    int episode = 0;
-    while (!env.isTerminal()) {
+    int stepCount = 0;
+
+    while (true) {
         Action action = agent.choose_action(state);
         int reward = env.takeAction(action);
         int new_state = env.getCurrentState();
         agent.learn(reward, state, action, new_state);
+
+
+        // Outputting the state, action, reward, and new state in the terminal
+        std::cout << "State: " << state
+                  << ", Action: " << action
+                  << ", Reward: " << reward
+                  << ", New State: " << new_state << std::endl;
+
         state = new_state;
-        std::cout << "Episode " << episode << ", State: " << state << ", Reward: " << reward << std::endl;
-        episode++;
+
+        if (env.isTerminal() || stepCount >= MAX_STEPS_PER_EPISODE) {
+            break;
+        }
+
+        stepCount++;
     }
 }
 
@@ -113,7 +150,7 @@ int main() {
     Agent agent;
     for (int i = 0; i < 10; ++i) {
         runEpisode(env, agent);
-        env = Environment(); // Once an episode finished, recreate the environment for the next one
+        env = Environment();  // Recreate the environment for the next episode
     }
     return 0;
 }
