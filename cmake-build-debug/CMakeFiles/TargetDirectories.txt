@@ -1,0 +1,5 @@
+/home/oreste/CLionProjects/MDP_GUI/cmake-build-debug/CMakeFiles/MDP_GUI.dir
+/home/oreste/CLionProjects/MDP_GUI/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/oreste/CLionProjects/MDP_GUI/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/oreste/CLionProjects/MDP_GUI/cmake-build-debug/CMakeFiles/MDP_GUI_autogen_timestamp_deps.dir
+/home/oreste/CLionProjects/MDP_GUI/cmake-build-debug/CMakeFiles/MDP_GUI_autogen.dir

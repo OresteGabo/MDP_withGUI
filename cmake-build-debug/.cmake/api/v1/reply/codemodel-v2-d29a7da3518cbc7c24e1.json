@@ -1,0 +1,78 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.27"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "MDP_GUI",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "MDP_GUI::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-MDP_GUI-Debug-9dc891cb1b656db4d3b0.json",
+					"name" : "MDP_GUI",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "MDP_GUI_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-MDP_GUI_autogen-Debug-e81fbcc96cf29608b8a9.json",
+					"name" : "MDP_GUI_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "MDP_GUI_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-MDP_GUI_autogen_timestamp_deps-Debug-638c8ce7f0a9f9b0f970.json",
+					"name" : "MDP_GUI_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/oreste/CLionProjects/MDP_GUI/cmake-build-debug",
+		"source" : "/home/oreste/CLionProjects/MDP_GUI"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}
