@@ -13,13 +13,12 @@ using namespace std;
 class Agent {
 private:
     mt19937 gen;//{std::random_device{}()};
-    double learning_rate = 0.1;
+    double learning_rate = 5;
     double discount_factor = 0.95;
     static const int NumOfActions = 4;
     double getMaxQValue(int state);
 
     std::array<std::array<double, Agent::NumOfActions>, Environment::NumStates> Q_table{};
-    //std::array<std::array<double, NumOfActions>, Environment::NumStates> Q_table{};
 public:
     Agent();
     Action choose_action(int state);
